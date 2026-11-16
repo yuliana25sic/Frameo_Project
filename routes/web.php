@@ -1,20 +1,23 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AuthController;
+use App\Models\Category;
+use App\Models\Package;
 use Illuminate\Support\Facades\Route;
 
+// Halaman Utama (Katalog Paket Sementara)
 Route::get('/', function () {
-    return view('welcome');
+    $categories = Category::all();
+    $packages = Package::with('category')->where('is_active', true)->get();
+    return view('home', compact('categories', 'packages'));
+})->name('home');
+
+// Route Autentikasi
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-require __DIR__.'/auth.php';
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
