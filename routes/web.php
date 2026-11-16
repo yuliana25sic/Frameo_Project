@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Models\Category;
 use App\Models\Package;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ReservationController;
 
 // Halaman Utama (Katalog Paket Sementara)
 Route::get('/', function () {
@@ -11,6 +12,14 @@ Route::get('/', function () {
     $packages = Package::with('category')->where('is_active', true)->get();
     return view('home', compact('categories', 'packages'));
 })->name('home');
+
+// Route Reservasi Customer (Harus Login)
+Route::middleware('auth')->group(function () {
+    Route::get('/booking/{package}', [ReservationController::class, 'create'])->name('reservations.create');
+    Route::post('/booking', [ReservationController::class, 'store'])->name('reservations.store');
+    Route::get('/my-reservations', [ReservationController::class, 'index'])->name('reservations.index');
+    Route::post('/my-reservations/{reservation}/payment', [ReservationController::class, 'uploadPayment'])->name('reservations.uploadPayment');
+});
 
 // Route Autentikasi
 Route::middleware('guest')->group(function () {
