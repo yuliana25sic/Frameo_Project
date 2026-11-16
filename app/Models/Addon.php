@@ -6,5 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Addon extends Model
 {
-    //
+    protected $fillable = [
+        'name',
+        'description',
+        'price',
+        'is_active',
+    ];
+
+    public function reservationAddons()
+    {
+        return $this->hasMany(ReservationAddon::class);
+    }
 }

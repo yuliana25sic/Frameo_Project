@@ -6,5 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
-    //
+    protected $fillable = [
+        'reservation_id',
+        'payment_method',
+        'amount',
+        'proof_image',
+        'payment_status',
+        'paid_at',
+    ];
+
+    public function reservation()
+    {
+        return $this->belongsTo(Reservation::class);
+    }
 }
